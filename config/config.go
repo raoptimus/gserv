@@ -3,7 +3,6 @@ package config
 import (
 	"encoding/json"
 	"errors"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -28,21 +27,14 @@ type (
 )
 
 var cfg *config
-var configFile string
-
-func init() {
-	flag.StringVar(&configFile, "config", "", "Configuration file options")
-}
 
 func OnAfterLoad(name string, f func()) {
-	initConfig()
 	cfg.after.Lock()
 	defer cfg.after.Unlock()
 	cfg.after.events[name] = f
 }
 
 func OffAfterLoad(name string) {
-	initConfig()
 	cfg.after.RLock()
 	_, ok := cfg.after.events[name]
 	cfg.after.RUnlock()
@@ -55,12 +47,10 @@ func OffAfterLoad(name string) {
 }
 
 func Object(name string, value interface{}) error {
-	initConfig()
 	return cfg.get(name, &value)
 }
 
 func String(name, value string) string {
-	initConfig()
 	var v string
 	if err := cfg.get(name, &v); err != nil {
 		return value
@@ -69,7 +59,6 @@ func String(name, value string) string {
 }
 
 func Bool(name string, value bool) bool {
-	initConfig()
 	var v bool
 	if err := cfg.get(name, &v); err != nil {
 		return value
@@ -78,7 +67,6 @@ func Bool(name string, value bool) bool {
 }
 
 func Int(name string, value int) int {
-	initConfig()
 	var v int
 	if err := cfg.get(name, &v); err != nil {
 		return value
@@ -87,7 +75,6 @@ func Int(name string, value int) int {
 }
 
 func Duration(name string, value time.Duration) time.Duration {
-	initConfig()
 	var v string
 	if err := cfg.get(name, &v); err != nil {
 		return value
@@ -136,12 +123,9 @@ func loadConfig(cfgFileName string) (*configData, error) {
 	return &d, nil
 }
 
-func initConfig() {
+func Init(configFile string) {
 	if cfg != nil {
 		return
-	}
-	if !flag.Parsed() {
-		flag.Parse()
 	}
 	d, err := loadConfig(configFile)
 	if err != nil {

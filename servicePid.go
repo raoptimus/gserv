@@ -1,45 +1,37 @@
 package gserv
+
 import (
-	"os"
-	"flag"
+	"errors"
+	"fmt"
 	"log"
+	"os"
+	"os/user"
 	"path"
 	"strconv"
 	"syscall"
-	"os/user"
-	"errors"
-	"fmt"
 )
 
 type (
-	pidFs struct  {
-	 fileName    string
-	 file      *os.File
+	pidFs struct {
+		file *os.File
 	}
 )
 
 var pid = &pidFs{}
 
-func init() {
-	flag.StringVar(&pid.fileName, "pid", "", "Pid file")
-}
-
-func (s *pidFs) writeLock() (exists bool, err error) {
-	if !flag.Parsed() {
-		flag.Parse()
+func (s *pidFs) writeLock(pidFileName string) (exists bool, err error) {
+	if pidFileName == "" {
+		pidFileName = s.getDefaultPidFile()
 	}
-	if s.fileName == "" {
-		s.fileName = s.getDefaultPidFile()
-	}
-	if s.fileName == "" {
+	if pidFileName == "" {
 		return false, errors.New("Pid file can't be blank")
 	}
-	if !s.fileExist(s.fileName) {
-		if err := s.createDir(path.Dir(s.fileName)); err != nil {
-			return false, fmt.Errorf("Can't create the dir %s: %v\n", s.fileName, err)
+	if !s.fileExist(pidFileName) {
+		if err := s.createDir(path.Dir(pidFileName)); err != nil {
+			return false, fmt.Errorf("Can't create the dir %s: %v\n", pidFileName, err)
 		}
 	}
-	s.file, err = os.OpenFile(s.fileName, os.O_RDWR|os.O_CREATE, 0666)
+	s.file, err = os.OpenFile(pidFileName, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		return false, fmt.Errorf("Can't open pid file: %v", err)
 	}
@@ -74,10 +66,9 @@ func (s *pidFs) writeLock() (exists bool, err error) {
 		s.closePidFs()
 		return false, errors.New("Can't be write to pid file")
 	}
-	log.Printf("Wrote pid %v to file %v\n", pid, s.fileName)
+	log.Printf("Wrote pid %v to file %v\n", pid, pidFileName)
 	return false, nil
 }
-
 
 func (s *pidFs) getDefaultPidFile() string {
 	usr, err := user.Current()

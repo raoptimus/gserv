@@ -2,7 +2,9 @@ package gserv
 
 import (
 	"errors"
+	"flag"
 	"fmt"
+	"github.com/raoptimus/gserv/config"
 	"github.com/raoptimus/rlog"
 	"log"
 	"os"
@@ -23,13 +25,33 @@ type (
 )
 
 var Service *service
+var configFile string
+var pidFile string
+var verbose bool
 
 func init() {
+	flag.StringVar(&configFile, "config", "", "Configuration file options")
+	flag.StringVar(&pidFile, "pid", "", "Pid file")
+	flag.BoolVar(&verbose, "v", false, "Verbose")
 	Service = &service{}
 }
 
+func (s *service) Verbose() bool {
+	return verbose
+}
+
+func (s *service) LoadConfig() {
+	if !flag.Parsed() {
+		flag.Parse()
+	}
+	config.Init(configFile)
+}
+
 func (s *service) Exists() bool {
-	exists, err := pid.writeLock()
+	if !flag.Parsed() {
+		flag.Parse()
+	}
+	exists, err := pid.writeLock(pidFile)
 	if err != nil {
 		log.Fatalln(err)
 	}
