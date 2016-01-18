@@ -1,0 +1,7 @@
+{
+    "config_string": "testvalue",
+    "config_int": 10,
+    "config_bool_true": true,
+    "config_bool_false": false
+}
+
