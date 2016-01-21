@@ -88,7 +88,8 @@ func DontPanic() {
 }
 
 func StartProfiler(addr string) {
-	Go(func() {
+	go func(addr string) {
+		defer DontPanic()
 		var netprofile = flag.Bool(
 			"netprofile",
 			true,
@@ -132,7 +133,7 @@ func StartProfiler(addr string) {
 			f.Close()
 			return
 		}
-	})
+	}(addr)
 }
 
 func (s *service) wait() {
