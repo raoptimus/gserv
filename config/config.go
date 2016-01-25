@@ -36,7 +36,7 @@ var cfg = &config{
 }
 
 func init() {
-	flag.StringVar(&configFile, "config", "", "cfguration file options")
+	flag.StringVar(&configFile, "config", "", "configuration file options")
 }
 
 func OnAfterLoad(name string, f func()) {
