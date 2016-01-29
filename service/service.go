@@ -71,8 +71,10 @@ func Start(wait bool) {
 }
 
 func Go(call func()) {
-	defer DontPanic()
-	call()
+	go func(call func()) {
+		defer DontPanic()
+		call()
+	}(call)
 }
 
 func GetTimeMoskow() *time.Location {
