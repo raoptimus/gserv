@@ -48,6 +48,7 @@ func Start(wait bool) {
 		log.Fatalln(err)
 		return
 	}
+	time.Local = serv.Location
 	log.Println("Time:", time.Now())
 	log.Println("CPU:", serv.MaxProc)
 	log.Println("Service starting...")
