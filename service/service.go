@@ -83,11 +83,13 @@ func GetTimeMoskow() *time.Location {
 	return l
 }
 
-func DontPanic() {
+func DontPanic() (err error) {
 	if r := recover(); r != nil {
-		serv.Logger.Crit(fmt.Sprintf("%v", r))
-		log.Println(serv.printStack(4))
+		err = fmt.Errorf("%v", r)
+		serv.Logger.Crit(err.Error())
+		log.Println(serv.printStack(8))
 	}
+	return
 }
 
 func StartProfiler(addr string) {
