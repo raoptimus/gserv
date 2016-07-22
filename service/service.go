@@ -87,7 +87,7 @@ func DontPanic() (err error) {
 	if r := recover(); r != nil {
 		err = fmt.Errorf("%v", r)
 		serv.Logger.Crit(err.Error())
-		log.Println(serv.printStack(8))
+		log.Println(serv.printStack(16))
 	}
 	return
 }
@@ -166,7 +166,7 @@ func (s *service) valid() error {
 }
 
 func (s *service) printStack(calls int) string {
-	buf := make([]byte, 512)
+	buf := make([]byte, 1024)
 	n := runtime.Stack(buf, false)
 	if n < len(buf) {
 		buf = buf[:n]
