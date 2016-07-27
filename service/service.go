@@ -159,7 +159,7 @@ func (s *service) valid() error {
 		s.MaxProc = runtime.NumCPU()
 	}
 	if s.Logger == nil {
-		s.Logger, _ = rlog.NewLogger(rlog.LoggerTypeStd, "")
+		s.Logger, _ = rlog.NewLogger(rlog.LoggerTypeStd, "", rlog.LOG_ALL)
 	}
 
 	return nil
