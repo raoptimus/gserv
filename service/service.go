@@ -13,6 +13,7 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -144,7 +145,7 @@ func StartProfiler(addr string) {
 func (s *service) wait() {
 	log.Println("Wait signals...")
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill)
+	signal.Notify(c, os.Interrupt, os.Kill, os.Signal(syscall.SIGTERM))
 	log.Println("Got signal:", <-c)
 }
 
